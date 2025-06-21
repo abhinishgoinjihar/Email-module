@@ -3,26 +3,27 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
 
-// Welcome Route
-Route::get('/', function () {
-    return view('welcome');
+// Home / Welcome
+Route::view('/', 'welcome')->name('welcome');
+
+// Guest-only
+Route::middleware('guest')->group(function () {
+    // Registration
+    Route::get('register', [RegisteredUserController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [RegisteredUserController::class, 'store']);
+
+    // Login
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login']);
 });
 
-// Registration Routes
-Route::post('/register', [RegisteredUserController::class, 'store']);
+// Auth-only
+Route::middleware('auth')->group(function () {
+    // Logout
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-// Login Routes
-Route::post('/login', [LoginController::class, 'login']);
-
-// Dashboard/Home Route (Authenticated User)
-Route::middleware('auth')->get('/home', [HomeController::class, 'index'])->name('home');
-
-// Logout Route (Optional)
-Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
-
-// Example of a Welcome Page Route
-Route::get('/welcome', function () {
-    return view('welcome');
+    // Dashboard
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });

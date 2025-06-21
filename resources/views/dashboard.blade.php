@@ -1,36 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h1>Dashboard</h1>
-
-        <h3>Users</h3>
-        <ul>
-            @foreach ($users as $user)
-                <li>{{ $user->name }} - {{ $user->email }}</li>
-            @endforeach
-        </ul>
-
-        <h3>Sent Emails</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Subject</th>
-                    <th>Content</th>
-                    <th>Sent At</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($emails as $email)
-                    <tr>
-                        <td>{{ $email->email }}</td>
-                        <td>{{ $email->subject }}</td>
-                        <td>{{ $email->content }}</td>
-                        <td>{{ $email->created_at }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0 rounded-3">
+                    <div class="card-body p-5">
+                        <h2 class="card-title text-center mb-4 fw-bold">Welcome, {{ Auth::user()->name }}!</h2>
+                        <p class="text-center text-muted mb-4">Here's your account information:</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span class="fw-medium">Name:</span>
+                                <span>{{ Auth::user()->name }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span class="fw-medium">Email:</span>
+                                <span>{{ Auth::user()->email }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection

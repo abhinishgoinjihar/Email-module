@@ -3,31 +3,37 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Mail\WelcomeEmail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\Rules;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\SendWelcomeEmail;
 
 class RegisteredUserController extends Controller
 {
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        $request->validate([
+            'name'                  => 'required|string|max:255',
+            'email'                 => 'required|email|unique:users,email',
+            'password'              => 'required|confirmed|min:8',
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => bcrypt($request->password),
         ]);
 
-        Mail::to($user->email)->queue(new WelcomeEmail($user));
+        Auth::login($user);
 
-        return response()->json(['message' => 'User created successfully'], 201);
+        // Dispatch welcome email
+        SendWelcomeEmail::dispatch($user);
+
+        return redirect()->route('dashboard');
     }
 }

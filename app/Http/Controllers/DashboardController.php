@@ -1,10 +1,13 @@
-use App\Models\User;
-use App\Models\SentEmail;
+<?php
 
-public function index()
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class DashboardController extends Controller
 {
-return view('dashboard', [
-'users' => User::all(),
-'emails' => SentEmail::latest()->get()
-]);
+    public function index()
+    {
+        return view('dashboard');
+    }
 }
